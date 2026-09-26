@@ -7,6 +7,22 @@
 
 <p align="center"><em>Your PDFs have secrets. GlyphScholar reads the fine print so you don't have to.</em></p>
 
+<p align="center">
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
+  <a href="./CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+  <a href="./CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-blueviolet.svg" alt="Code of Conduct"></a>
+  <a href="./INSTALL.md"><img src="https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white" alt="Python 3.12"></a>
+  <a href="./INSTALL.md"><img src="https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white" alt="Node >=18"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/pgvector-000000?logo=postgresql&logoColor=white" alt="pgvector">
+  <img src="https://img.shields.io/badge/Chainlit-black" alt="Chainlit">
+</p>
+
 ## The problem
 
 PDFs are where information goes to become inconvenient. `Ctrl+F` finds a word but not an idea. Copy-pasting a table gets you one long unreadable string. OCR tools read the text and quietly ignore the formula sitting two lines below it. And the one chart that actually explains the finding? Most text-only RAG pipelines never even look at it — they were built to read words, not pages.
@@ -18,7 +34,7 @@ GlyphScholar exists to skip that part. It parses a document the way a person act
 ## Demo
 
 <video src="https://github.com/user-attachments/assets/aa8570f4-1be6-4326-ab8d-52122921c60e" controls width="720">
-  Your browser does not support inline video. <a href="./demo.mp4">Download the demo</a>.
+  Your browser does not support inline video.
 </video>
 
 ## What it actually does
@@ -127,6 +143,21 @@ Not promises, not a backlog carved in stone — just the honest list of things w
 - [ ] **Self-hosted embedding/rerank option** — a path that needs neither Ollama nor Modal, for anyone who'd rather run everything on their own GPU box.
 
 Have an idea that's not here? Open an issue using the [feature request template](./.github/ISSUE_TEMPLATE/feature_request.md) — this list is meant to grow.
+
+## Acknowledgments
+
+GlyphScholar leans on a handful of other people's very good work, and none of it cost a dime to build with:
+
+- **[MinerU](https://mineru.net/)** — for the PDF parsing most tools give up on. Free during its current API beta.
+- **[Modal](https://modal.com/)** — for serverless GPUs that don't require owning a GPU. Free Starter tier includes $30/month in compute credits.
+- **[Supabase](https://supabase.com/)** — for Postgres, auth, and the Chainlit data layer in one place. Free tier, pgvector included.
+- **[Hugging Face](https://huggingface.co/)** — for hosting the model weights this project downloads. Free, always has been.
+- **[Ollama](https://ollama.com/)** — for making local inference a `brew install` away. Free and open-source.
+- **[Chainlit](https://docs.chainlit.io/)** — for the chat UI, so this project didn't have to build one from scratch. Free and open-source.
+- **[Opik](https://www.comet.com/site/products/opik/)** — for turning "the model just made that up" into something traceable. Free tier for individual projects.
+- **[FastAPI](https://fastapi.tiangolo.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[pgvector](https://github.com/pgvector/pgvector)**, and **[Next.js](https://nextjs.org/)** — the free, open-source foundation everything else sits on.
+
+Every service above was used on its free tier for this project. That's not a limitation so much as the point — a good chunk of a modern multimodal RAG stack apparently fits inside "free," if you're willing to read the docs for each one. See [INSTALL.md](./INSTALL.md) to set up the same stack yourself.
 
 ## Contributing
 
