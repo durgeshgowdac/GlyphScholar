@@ -59,6 +59,7 @@ async def get_answer_client() -> openai.AsyncOpenAI:
         )
     return answer_client
 
+
 # Opik (comet.com) tracing — disabled/no-op whenever OPIK_API_KEY isn't set,
 # so this is inert for anyone who hasn't configured it.
 opik_client = opik.Opik() if os.getenv("OPIK_API_KEY") else None
@@ -403,16 +404,39 @@ class SuppressStorageClientWarnings(logging.Filter):
 
 logging.getLogger("chainlit").addFilter(SuppressStorageClientWarnings())
 
-
 # --- Persistent chat storage (resumable threads, message history) ----------
 # Requires backend/migrations/002_chainlit_datalayer.sql
+
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+
+
 @cl.data_layer
 def get_data_layer():
-    conninfo = os.getenv("DATABASE_URL", "").replace(
-        "postgresql://", "postgresql+asyncpg://", 1
+    raw = os.getenv("DATABASE_URL", "")
+
+    parts = urlsplit(
+        raw.replace("postgresql://", "postgresql+asyncpg://", 1)
     )
+
+    query = dict(parse_qsl(parts.query))
+
+    # libpq → asyncpg
+    if "sslmode" in query:
+        query["ssl"] = query.pop("sslmode")
+
+    # Not supported by asyncpg
+    query.pop("channel_binding", None)
+
+    conninfo = urlunsplit(
+        parts._replace(query=urlencode(query))
+    )
+
     from backend.storage import LocalStorageClient
-    return GlyphScholarDataLayer(conninfo=conninfo, storage_provider=LocalStorageClient())
+
+    return GlyphScholarDataLayer(
+        conninfo=conninfo,
+        storage_provider=LocalStorageClient(),
+    )
 
 
 @cl.header_auth_callback
