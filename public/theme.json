@@ -1,0 +1,91 @@
+{
+  "custom_fonts": [],
+  "variables": {
+    "light": {
+      "--font-sans": "'Inter', sans-serif",
+      "--font-mono": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+
+      "--background": "40 38% 97%",
+      "--foreground": "222 45% 12%",
+
+      "--card": "40 40% 99%",
+      "--card-foreground": "222 45% 12%",
+
+      "--popover": "40 40% 99%",
+      "--popover-foreground": "222 45% 12%",
+
+      "--primary": "27 94% 34%",
+      "--primary-foreground": "0 0% 100%",
+
+      "--secondary": "38 32% 91%",
+      "--secondary-foreground": "222 40% 18%",
+
+      "--muted": "38 26% 93%",
+      "--muted-foreground": "217 15% 38%",
+
+      "--accent": "44 58% 85%",
+      "--accent-foreground": "28 55% 22%",
+
+      "--destructive": "0 72% 45%",
+      "--destructive-foreground": "0 0% 100%",
+
+      "--border": "35 22% 86%",
+      "--input": "35 22% 86%",
+      "--ring": "27 94% 34%",
+
+      "--radius": "0.75rem",
+
+      "--sidebar-background": "36 40% 94%",
+      "--sidebar-foreground": "222 45% 15%",
+      "--sidebar-primary": "27 94% 34%",
+      "--sidebar-primary-foreground": "0 0% 100%",
+      "--sidebar-accent": "42 46% 88%",
+      "--sidebar-accent-foreground": "28 55% 20%",
+      "--sidebar-border": "35 20% 84%",
+      "--sidebar-ring": "27 94% 34%"
+    },
+    "dark": {
+      "--font-sans": "'Inter', sans-serif",
+      "--font-mono": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+
+      "--background": "224 42% 8%",
+      "--foreground": "40 30% 96%",
+
+      "--card": "224 34% 13%",
+      "--card-foreground": "40 30% 96%",
+
+      "--popover": "224 34% 13%",
+      "--popover-foreground": "40 30% 96%",
+
+      "--primary": "46 62% 55%",
+      "--primary-foreground": "222 39% 10%",
+
+      "--secondary": "224 26% 19%",
+      "--secondary-foreground": "40 30% 96%",
+
+      "--muted": "224 22% 18%",
+      "--muted-foreground": "216 16% 68%",
+
+      "--accent": "27 42% 24%",
+      "--accent-foreground": "42 85% 82%",
+
+      "--destructive": "0 68% 48%",
+      "--destructive-foreground": "0 0% 100%",
+
+      "--border": "224 22% 22%",
+      "--input": "224 22% 22%",
+      "--ring": "46 62% 55%",
+
+      "--radius": "0.75rem",
+
+      "--sidebar-background": "224 46% 6%",
+      "--sidebar-foreground": "40 30% 96%",
+      "--sidebar-primary": "46 62% 55%",
+      "--sidebar-primary-foreground": "222 39% 10%",
+      "--sidebar-accent": "27 38% 20%",
+      "--sidebar-accent-foreground": "42 85% 82%",
+      "--sidebar-border": "224 22% 18%",
+      "--sidebar-ring": "46 62% 55%"
+    }
+  }
+}

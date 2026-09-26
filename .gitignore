@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+**/.DS_Store
+__MACOSX/
+._*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.env.local
+.pytest_cache/
+.tox/
+.coverage
+
+# IDEs
+.idea/
+.vscode/
+
+# Node / Next.js (portal/)
+portal/node_modules/
+portal/.next/
+portal/out/
+portal/.env.local
+node_modules/
+
+# App data
+data
+*.log
+
+# Chainlit
+.chainlit/*.db
+.files/
+
+# Supabase CLI local state
+supabase/.temp/
+
+scratch/
