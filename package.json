@@ -1,7 +1,7 @@
 {
   "scripts": {
     "portal": "npm run dev --prefix portal --silent",
-    "backend": "./.venv/bin/uvicorn backend.server:app --reload --host 0.0.0.0 --port 8000 --log-level warning",
+    "backend": "./.venv/bin/uvicorn backend.server:app --reload --host 0.0.0.0 --port $PORT --log-level warning",
     "dev": "concurrently --names \"portal,backend\" --prefix-colors \"cyan,yellow\" \"npm run portal\" \"npm run backend\""
   },
   "devDependencies": {
