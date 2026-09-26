@@ -17,11 +17,9 @@ GlyphScholar exists to skip that part. It parses a document the way a person act
 
 ## Demo
 
-<video src="./demo.mp4" controls width="720">
+<video src="https://github.com/user-attachments/assets/aa8570f4-1be6-4326-ab8d-52122921c60e" controls width="720">
   Your browser does not support inline video. <a href="./demo.mp4">Download the demo</a>.
 </video>
-
-> GitHub only plays `.mp4` files uploaded as an attachment (drag-and-drop the file into this README's editor on github.com), which rewrites the `src` to a `https://github.com/user-attachments/...` URL. A local repo path like `./demo.mp4` won't render — do that swap once the repo is on GitHub, or just link the file directly: [demo.mp4](./demo.mp4).
 
 ## What it actually does
 
