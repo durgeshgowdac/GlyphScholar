@@ -9,7 +9,7 @@ from collections import defaultdict, deque
 from contextlib import asynccontextmanager
 from http.cookies import SimpleCookie
 from pathlib import Path
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import urlsplit
 
 import httpx
 import jwt
@@ -193,7 +193,6 @@ raw_origins = os.getenv(
     '["http://localhost:3000","http://127.0.0.1:3000"]'
 )
 CORS_ORIGINS: list[str] = json.loads(raw_origins)
-ALLOWED_PORTAL_HOSTS = {h for h in (urlsplit(o).hostname for o in CORS_ORIGINS) if h}
 
 if ENVIRONMENT == "development":
     # Relaxed CORS for local dev — allow_origin_regex (not "*") is required
@@ -230,15 +229,9 @@ PORTAL_ORIGINS = {
 
 
 def portal_url(request: Request, path: str = "") -> str:
-    host = request.url.hostname
-    origin = PORTAL_ORIGINS.get(host)
-
+    origin = next(iter(PORTAL_ORIGINS.values()), None)
     if not origin:
-        raise RuntimeError(
-            f"portal_url(): no matching entry in CORS_ORIGINS for host {host!r}. "
-            f"Configured origins: {list(PORTAL_ORIGINS)}"
-        )
-
+        raise RuntimeError("portal_url(): CORS_ORIGINS has no valid origins configured")
     return f"{origin}{path}"
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
