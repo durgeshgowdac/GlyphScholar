@@ -20,10 +20,13 @@ import { useState, useEffect } from "react";
 
 // Derive the backend URL at runtime from whatever hostname the browser is
 // currently on — just swap the port to 8000.
+// function getBackendUrl(): string {
+//   if (typeof window === "undefined") return "http://127.0.0.1:8000";
+//   const { protocol, hostname } = window.location;
+//   return `${protocol}//${hostname}:8000`;
+// }
 function getBackendUrl(): string {
-  if (typeof window === "undefined") return "http://127.0.0.1:8000";
-  const { protocol, hostname } = window.location;
-  return `${protocol}//${hostname}:8000`;
+  return process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://127.0.0.1:8000";
 }
 
 export function LoginForm({
