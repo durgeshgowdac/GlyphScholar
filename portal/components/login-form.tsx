@@ -26,7 +26,7 @@ import { useState, useEffect } from "react";
 //   return `${protocol}//${hostname}:8000`;
 // }
 function getBackendUrl(): string {
-  return process.env.BACKEND_URL ?? "http://127.0.0.1:8000";
+  return process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://127.0.0.1:8000";
 }
 
 export function LoginForm({
