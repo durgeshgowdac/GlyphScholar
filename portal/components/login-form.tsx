@@ -46,11 +46,14 @@ export function LoginForm({
         const probe = await fetch("/auth/check", {credentials: "include"});
         if (probe.ok) {
           const supabase = createClient();
-          const {data: {session}} = await supabase.auth.getSession();
-          if (session?.access_token) {
-            const backendUrl = getBackendUrl();
-            window.location.href = `${backendUrl}/auth/bridge?token=${session.access_token}`;
-            return;
+          const {data: {user}} = await supabase.auth.getUser(); // server-verified, not cached
+          if (user) {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.access_token) {
+              const backendUrl = getBackendUrl();
+              window.location.href = `${backendUrl}/auth/bridge?token=${session.access_token}`;
+              return;
+            }
           }
         }
       } catch {

@@ -169,7 +169,7 @@ class AuthMiddleware:
                 print("No valid Supabase session — refusing", scope["type"], path)
                 if scope["type"] == "http":
                     request = Request(scope, receive=receive)
-                    response = RedirectResponse(portal_url(request, "/auth/login"))
+                    response = RedirectResponse(portal_url(request, "/auth/logout-callback"))
                     await response(scope, receive, send)
                 else:
                     # No such thing as an HTTP redirect mid-WebSocket-handshake;
@@ -472,13 +472,11 @@ async def logout(request: Request):
     # hostname = request.url.hostname
     # response.delete_cookie(SUPABASE_COOKIE_NAME, path="/", domain=hostname, samesite="lax")
 
-    response.delete_cookie(SUPABASE_COOKIE_NAME, path="/", samesite="lax")
     response.delete_cookie(SESSION_COOKIE_NAME, path="/", samesite="lax")
     # Also clear any chunked variants — deleting only the base name leaves
     # .0/.1/... behind if the session was ever large enough to get split.
-    for name in supabase_cookie_names_present(dict(request.cookies)):
-        response.delete_cookie(name, path="/", samesite="lax")
-
+    # for name in supabase_cookie_names_present(dict(request.cookies)):
+    #     response.delete_cookie(name, path="/", samesite="lax")
     return response
 
 
