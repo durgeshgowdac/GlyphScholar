@@ -18,3 +18,4 @@ greenlet~=3.5.6
 asyncpg~=0.31.0
 opik~=2.2.72
 psycopg2~=2.9.13
+boto3~=1.43.103
