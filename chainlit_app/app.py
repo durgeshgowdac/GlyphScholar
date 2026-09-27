@@ -23,7 +23,7 @@ from backend.db import (
 from backend.ingest import ingest_document, looks_like_text
 from backend.rag_log import log_retrievals
 from backend.retrieve import retrieve
-from backend.server import supabase_cookie_names_present
+from backend.server import supabase_cookie_names_present, SESSION_COOKIE_NAME
 from backend.storage import ELEMENTS_ROOT, session_upload_dir, session_upload_path
 
 # Load the .env from the project root (one level up) to avoid cwd-based loading issues.
@@ -1231,3 +1231,4 @@ async def on_chat_end():
 def on_logout(request: Request, response: Response):
     for name in supabase_cookie_names_present(dict(request.cookies)):
         response.delete_cookie(name, path="/", samesite="lax")
+    response.delete_cookie(SESSION_COOKIE_NAME, path="/", samesite="lax")
