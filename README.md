@@ -60,6 +60,7 @@ npm run dev
 ```
 
 This runs the portal (`http://localhost:3000`) and the FastAPI backend together. That's it. That's the launch sequence.
+Deploying it somewhere other than your laptop? See **[hosting.md](./hosting.md)** for the production topology (Vercel, Render, Neon, Backblaze B2) and the env vars each host needs.
 
 ## Architecture, in one breath
 
@@ -156,6 +157,10 @@ GlyphScholar leans on a handful of other people's very good work, and none of it
 - **[Chainlit](https://docs.chainlit.io/)** — for the chat UI, so this project didn't have to build one from scratch. Free and open-source.
 - **[Opik](https://www.comet.com/site/products/opik/)** — for turning "the model just made that up" into something traceable. Free tier for individual projects.
 - **[FastAPI](https://fastapi.tiangolo.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[pgvector](https://github.com/pgvector/pgvector)**, and **[Next.js](https://nextjs.org/)** — the free, open-source foundation everything else sits on.
+- **[Vercel](https://vercel.com/)** — hosts the portal. Free Hobby tier.
+- **[Render](https://render.com/)** — hosts the FastAPI + Chainlit backend. Free tier.
+- **[Neon](https://neon.tech/)** — serverless Postgres for the app's own data in production (separate from Supabase's auth-only database — see hosting.md). Free tier.
+- **[Backblaze B2](https://www.backblaze.com/cloud-storage)** — S3-compatible object storage for chat elements/attachments in production. Free tier.
 
 Every service above was used on its free tier for this project. That's not a limitation so much as the point — a good chunk of a modern multimodal RAG stack apparently fits inside "free," if you're willing to read the docs for each one. See [INSTALL.md](./INSTALL.md) to set up the same stack yourself.
 

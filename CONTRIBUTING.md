@@ -20,7 +20,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](./
 
 - **Bug fixes** — corrections to existing behavior in the backend, Chainlit app, Modal services, or the portal frontend.
 - **Features** — new retrieval strategies, ingestion improvements, UI additions, and so on.
-- **Documentation** — improvements to `README.md`, `INSTALL.md`, or inline code comments.
+- **Documentation** — improvements to `README.md`, `INSTALL.md`, `hosting.md`, or inline code comments.
 - **Issue triage** — reproducing reported bugs, confirming fixes, and reviewing open pull requests.
 
 If you're planning a larger change (a new architecture piece, a breaking API change, a new external service dependency), please open an issue first to discuss the approach before investing significant time.
