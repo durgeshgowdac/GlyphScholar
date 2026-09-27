@@ -217,17 +217,32 @@ else:
 
 app.add_middleware(AuthMiddleware)
 
-PORTAL_PORT = int(os.getenv("PORTAL_PORT", "3000"))
+# PORTAL_PORT = int(os.getenv("PORTAL_PORT", "3000"))
+#
+# PORTAL_HOST = os.getenv("PORTAL_HOST")
+#
+#
+# def portal_url(request: Request, path: str = "") -> str:
+#     host = PORTAL_HOST or request.url.hostname
+#     if host not in ALLOWED_PORTAL_HOSTS:
+#         host = next(iter(ALLOWED_PORTAL_HOSTS), "localhost")
+#     scheme = request.url.scheme
+#     return urlunsplit((scheme, f"{host}:{PORTAL_PORT}", path, "", ""))
 
-PORTAL_HOST = os.getenv("PORTAL_HOST")
+# Map hostname -> full origin (scheme + host + port, if any), taken
+# straight from CORS_ORIGINS — this is already correct for both
+# dev ("http://localhost:3000") and production ("https://glyphscholar.vercel.app").
+PORTAL_ORIGINS = {
+    urlsplit(o).hostname: o.rstrip("/")
+    for o in CORS_ORIGINS
+    if urlsplit(o).hostname
+}
 
 
 def portal_url(request: Request, path: str = "") -> str:
-    host = PORTAL_HOST or request.url.hostname
-    if host not in ALLOWED_PORTAL_HOSTS:
-        host = next(iter(ALLOWED_PORTAL_HOSTS), "localhost")
-    scheme = request.url.scheme
-    return urlunsplit((scheme, f"{host}:{PORTAL_PORT}", path, "", ""))
+    host = request.url.hostname
+    origin = PORTAL_ORIGINS.get(host) or next(iter(PORTAL_ORIGINS.values()), "http://localhost:3000")
+    return f"{origin}{path}"
 
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
