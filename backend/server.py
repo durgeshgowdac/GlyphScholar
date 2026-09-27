@@ -316,8 +316,40 @@ def read_supabase_cookie_value(cookies: dict[str, str]) -> str | None:
     return "".join(chunks) if chunks else None
 
 
+SESSION_COOKIE_NAME = "gs_session"
+
+@app.get("/auth/bridge")
+async def auth_bridge(request: Request, token: str):
+    user = verify_supabase_token(token)
+    if not user:
+        return RedirectResponse(portal_url(request, "/auth/login"))
+
+    response = RedirectResponse(url="/chat")
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=3600,
+    )
+    return response
+
+def claims_to_user(claims: dict) -> dict:
+    return {
+        "user_id": claims["sub"],
+        "email": claims.get("email", ""),
+        "username": claims.get("user_metadata", {}).get("username", ""),
+        "role": claims.get("app_metadata", {}).get("role", ""),
+    }
+
 def extract_user_from_cookies(cookies: dict[str, str]) -> dict | None:
     """Verify the Supabase browser cookie and return the user, or None."""
+    bridged = cookies.get(SESSION_COOKIE_NAME)
+    if bridged:
+        claims = verify_supabase_token(bridged)
+        return claims_to_user(claims) if claims else None
+
     raw = read_supabase_cookie_value(cookies)
     if not raw:
         return None
@@ -339,16 +371,11 @@ def extract_user_from_cookies(cookies: dict[str, str]) -> dict | None:
     except Exception:
         return None
 
-    user = verify_supabase_token(access_token)
-    if not user:
+    claims = verify_supabase_token(access_token)
+    if not claims:
         return None
 
-    return {
-        "user_id": user["sub"],
-        "email": user.get("email", ""),
-        "username": user.get("user_metadata", {}).get("username", ""),
-        "role": user.get("app_metadata", {}).get("role", ""),
-    }
+    return claims_to_user(claims)
 
 
 def extract_user_from_request(request: Request) -> dict | None:
@@ -453,6 +480,7 @@ async def logout(request: Request):
     # response.delete_cookie(SUPABASE_COOKIE_NAME, path="/", domain=hostname, samesite="lax")
 
     response.delete_cookie(SUPABASE_COOKIE_NAME, path="/", samesite="lax")
+    response.delete_cookie(SESSION_COOKIE_NAME, path="/", samesite="lax")
     # Also clear any chunked variants — deleting only the base name leaves
     # .0/.1/... behind if the session was ever large enough to get split.
     for name in supabase_cookie_names_present(dict(request.cookies)):

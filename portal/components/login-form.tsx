@@ -43,11 +43,15 @@ export function LoginForm({
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const probe = await fetch("/auth/check", { credentials: "include" });
+        const probe = await fetch("/auth/check", {credentials: "include"});
         if (probe.ok) {
-          const backendUrl = getBackendUrl();
-          window.location.href = `${backendUrl}/chat`;
-          return;
+          const supabase = createClient();
+          const {data: {session}} = await supabase.auth.getSession();
+          if (session?.access_token) {
+            const backendUrl = getBackendUrl();
+            window.location.href = `${backendUrl}/auth/bridge?token=${session.access_token}`;
+            return;
+          }
         }
       } catch {
         // backend unreachable, show login form
@@ -95,14 +99,17 @@ export function LoginForm({
         loginEmail = emailFromUsername;
       }
 
-      const { error: loginError } = await supabase.auth.signInWithPassword({
+      const { data, error: loginError } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password,
       });
 
       if (loginError) throw new Error("Invalid username/email or password.");
 
-      window.location.href = `${backendUrl}/chat`;
+      const accessToken = data.session?.access_token;
+      if (!accessToken) throw new Error("Could not establish a session.");
+
+      window.location.href = `${backendUrl}/auth/bridge?token=${accessToken}`;
 
     } catch (err: unknown) {
       console.error("Login error:", err);
