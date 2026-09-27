@@ -412,11 +412,25 @@ from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 @cl.data_layer
 def get_data_layer():
-    raw = os.getenv("DATABASE_URL", "")
+    raw = os.getenv("DATABASE_URL", "").strip().strip('"').strip("'")
+    environment = os.getenv("ENVIRONMENT", "development").lower()
 
-    parts = urlsplit(
-        raw.replace("postgresql://", "postgresql+asyncpg://", 1)
-    )
+    if environment not in {"development", "production"}:
+        raise ValueError(
+            "ENVIRONMENT must be 'development' or 'production'"
+        )
+
+    # PostgreSQL URL → asyncpg-compatible URL
+    parts = urlsplit(raw)
+
+    if parts.scheme in {"postgresql", "postgres"}:
+        parts = parts._replace(scheme="postgresql+asyncpg")
+    else:
+        raise ValueError(
+            f"DATABASE_URL has an unexpected scheme {parts.scheme!r} — "
+            "expected 'postgresql' or 'postgres'. Check for stray quotes "
+            "or a copy-paste error in the Render env var."
+        )
 
     query = dict(parse_qsl(parts.query))
 
@@ -431,11 +445,25 @@ def get_data_layer():
         parts._replace(query=urlencode(query))
     )
 
-    from backend.storage import LocalStorageClient
+    # Storage provider
+    if environment == "production":
+        from chainlit.data.storage_clients.s3 import S3StorageClient
+
+        storage_provider = S3StorageClient(
+            bucket=os.environ["B2_BUCKET"],
+            endpoint_url=os.environ['B2_ENDPOINT'],
+            aws_access_key_id=os.environ["B2_KEY_ID"],
+            aws_secret_access_key=os.environ["B2_APP_KEY"],
+            region_name=os.environ["B2_REGION"],
+        )
+    else:
+        from backend.storage import LocalStorageClient
+
+        storage_provider = LocalStorageClient()
 
     return GlyphScholarDataLayer(
         conninfo=conninfo,
-        storage_provider=LocalStorageClient(),
+        storage_provider=storage_provider,
     )
 
 
