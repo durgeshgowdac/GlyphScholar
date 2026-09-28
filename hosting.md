@@ -58,26 +58,29 @@ Push `schema.sql` to the Supabase project the same way you would any Supabase mi
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key |
-| `BACKEND_URL` | The Render backend's URL, e.g. `https://glyphscholar.onrender.com` |
+| `BACKEND_URL` | The Render backend's URL, e.g. `https://<your-app>.onrender.com` — used server-side, in `next.config.ts`'s rewrites and `app/auth/check/route.ts` |
+| `NEXT_PUBLIC_BACKEND_URL` | Same URL, but the client-side copy — `login-form.tsx` and `site-header.tsx` read this in the browser (only `NEXT_PUBLIC_*` vars reach client code in Next.js, so both this and `BACKEND_URL` above need to be set to the same value) |
 
 ## Backend — Render
 
 Web service, not a background worker (it serves HTTP + WebSocket traffic for `/chat`).
 
 - **Build command:** `pip install -r requirements.txt`
-- **Start command:** `npm start` — already defined in `package.json` as `uvicorn backend.server:app --host 0.0.0.0 --port ${PORT:-8000}`, which picks up Render's injected `$PORT` automatically.
+- **Start command:** `npm start` — already defined in `package.json` as `./.venv/bin/uvicorn backend.server:app --host 0.0.0.0 --port ${PORT:-8000}`, which picks up Render's injected `$PORT` automatically. Note that it invokes `./.venv/bin/uvicorn` specifically — make sure whatever build command you use actually creates `.venv` (e.g. `python3.12 -m venv .venv && ./.venv/bin/pip install -r requirements.txt`), or point the start command at a plain `uvicorn` install instead. Since the start command is `npm start`, the service needs both a Python and a Node runtime available, not just Python.
 
 | Variable | Notes |
 |---|---|
 | `ENVIRONMENT` | Set to `production` — this is also what selects the B2 storage client over `LocalStorageClient` (see `chainlit_app/app.py`'s `get_data_layer()`) |
-| `CORS_ORIGINS` | JSON array string, must include the portal's Vercel URL, e.g. `["https://glyphscholar.vercel.app"]`. **The first entry is the one every backend→portal redirect uses** (`portal_url()` in `server.py` — login-required redirects, `/auth/bridge`, `/auth/logout-callback`), so if you list more than one origin (e.g. a preview deployment), put the canonical production URL first. |
+| `PYTHON_VERSION`, `NODE_VERSION` | Pin Render's runtime versions, e.g. `3.12.10` and `26.8.2` — matching the versions in [INSTALL.md](./INSTALL.md#verified-versions). Node is required here too, since the start command runs through `npm start`. |
+| `CORS_ORIGINS` | JSON array string, must include the portal's Vercel URL, e.g. `["https://<your-app>.vercel.app"]`. **The first entry is the one every backend→portal redirect uses** (`portal_url()` in `server.py` — login-required redirects, `/auth/bridge`, `/auth/logout-callback`), so if you list more than one origin (e.g. a preview deployment), put the canonical production URL first. |
 | `CHAINLIT_AUTH_SECRET` | `chainlit create-secret` |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | See [Auth](#auth--supabase) |
 | `DATABASE_URL` | See [Database](#database-local-or-neon) |
 | `B2_BUCKET`, `B2_ENDPOINT`, `B2_KEY_ID`, `B2_APP_KEY`, `B2_REGION` | See [Storage](#storage--backblaze-b2) — **not currently listed in `.env.example`**, but required whenever `ENVIRONMENT=production` |
 | `MINERU_TOKEN` + friends | See [MinerU](#mineru) |
 | `OPIK_API_KEY`, `OPIK_WORKSPACE`, `OPIK_PROJECT_NAME` | See [Opik](#opik) |
-| `MODAL_API_KEY`, `HF_TOKEN`, `USE_MODAL_EMBED=True`, `USE_MODAL_RERANK=True`, `USE_MODAL_ANSWER=True` | See [Modal](#modal) — Render has no GPU, so production should route inference through Modal rather than Ollama |
+| `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET` | **Different from `MODAL_API_KEY` below.** These authenticate the Modal *Python SDK itself* to Modal's platform — required because `backend/ingest.py` and `backend/retrieve.py` call `modal.Cls.from_name("glyphscholar", ...)` directly from the running backend, not over plain HTTPS. Locally, `modal setup` writes these into `~/.modal.toml`; on Render, copy the `token_id` / `token_secret` values from that file into these two env vars instead. |
+| `MODAL_API_KEY`, `HF_TOKEN`, `USE_MODAL_EMBED=True`, `USE_MODAL_RERANK=True`, `USE_MODAL_ANSWER=True` | `MODAL_API_KEY` is a separate, app-level shared secret (see [Modal](#modal)) that the deployed Modal classes check against — unrelated to the SDK auth above. Render has no GPU, so production should route inference through Modal rather than Ollama. |
 | everything else in `.env.example` | Same meaning as local dev |
 
 ## Database — local or Neon
@@ -133,11 +136,11 @@ storage_provider = S3StorageClient(
 | `B2_APP_KEY` | Application key secret |
 | `B2_REGION` | Region portion of the endpoint, e.g. `us-west-004` |
 
-This only stores what Chainlit's data layer uploads (chat images/attachments via `create_element`) — it's unrelated to `UPLOAD_ROOT`, which is the app's own document-upload directory and stays local-disk regardless of environment. Render's filesystem is ephemeral between deploys, so anything under `UPLOAD_ROOT` in production doesn't survive a redeploy.
+This only stores what Chainlit's data layer uploads (chat images/attachments via `create_element`) — it's unrelated to `UPLOAD_ROOT`, which is the app's own document-upload directory and stays local-disk regardless of environment (see `MAX_USER_UPLOAD_BYTES` / `UPLOAD_ROOT` in `.env.example`). Render's filesystem is ephemeral between deploys, so anything under `UPLOAD_ROOT` in production doesn't survive a redeploy — that's fine for in-flight ingestion, but not a place to expect long-term persistence.
 
 ## MinerU
 
-Hosted API, nothing to deploy — same `MINERU_*` variables as local dev, set on Render instead of `.env`.
+Hosted API, nothing to deploy — same `MINERU_*` variables as local dev (see [INSTALL.md § MinerU](./INSTALL.md#4-mineru)), set on Render instead of `.env`.
 
 ## Opik
 
@@ -145,7 +148,12 @@ Hosted (comet.com), nothing to deploy — same `OPIK_API_KEY`, `OPIK_WORKSPACE`,
 
 ## Modal
 
-Deployed independently of Render/Vercel:
+Deployed independently of Render/Vercel — Modal's own serverless GPU containers run the embedding, reranker, and answer models. There are two unrelated sets of Modal credentials in play:
+
+- **`MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET`** — authenticate the Modal SDK itself to Modal's platform. Needed anywhere the SDK runs: your own machine (via `modal setup`, which writes them to `~/.modal.toml`) *and* the Render backend, since `backend/ingest.py`/`backend/retrieve.py` call `modal.Cls.from_name(...)` directly at request time.
+- **`MODAL_API_KEY`** — an app-level shared secret with no relation to the above. It's pushed into a Modal Secret that the deployed `EmbeddingServer`/`RerankServer`/`AnswerServer` classes check against, so the same value must also be set as `MODAL_API_KEY` on Render.
+
+From a machine with the Modal CLI authenticated (`modal setup`):
 
 ```bash
 modal secret create --force glyphscholar-secret \
@@ -156,8 +164,8 @@ modal run modal/services.py::download_models   # one-time, ~10 GB into a Modal V
 modal deploy modal/services.py
 ```
 
-Set `USE_MODAL_EMBED=True`, `USE_MODAL_RERANK=True`, `USE_MODAL_ANSWER=True` on Render so the backend routes inference through Modal instead of Ollama. Redeploying `modal/services.py` doesn't require redeploying the Render backend, and vice versa.
+Set `USE_MODAL_EMBED=True`, `USE_MODAL_RERANK=True`, `USE_MODAL_ANSWER=True` on Render so the backend routes inference through Modal instead of Ollama (Render's web service has no GPU). Redeploying `modal/services.py` doesn't require redeploying the Render backend, and vice versa — they're independent.
 
 ## Not hosted anywhere in production
 
-**Ollama** is a local-only fallback for development. It isn't deployed to Render or anywhere else — production should run with the `USE_MODAL_*` flags on.
+**Ollama** is a local-only fallback for development (`USE_MODAL_*=False`). It isn't deployed to Render or anywhere else — production should run with the `USE_MODAL_*` flags on, per [Modal](#modal) above.
