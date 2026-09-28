@@ -159,7 +159,7 @@ GlyphScholar leans on a handful of other people's very good work, and none of it
 - **[FastAPI](https://fastapi.tiangolo.com/)**, **[PostgreSQL](https://www.postgresql.org/)**, **[pgvector](https://github.com/pgvector/pgvector)**, and **[Next.js](https://nextjs.org/)** — the free, open-source foundation everything else sits on.
 - **[Vercel](https://vercel.com/)** — hosts the portal. Free Hobby tier.
 - **[Render](https://render.com/)** — hosts the FastAPI + Chainlit backend. Free tier.
-- **[Neon](https://neon.tech/)** — serverless Postgres for the app's own data in production (separate from Supabase's auth-only database — see hosting.md). Free tier.
+- **[Neon](https://neon.tech/)** — serverless Postgres for the app's own data in production (separate from Supabase's auth-only database — see [hosting.md](./hosting.md)). Free tier.
 - **[Backblaze B2](https://www.backblaze.com/cloud-storage)** — S3-compatible object storage for chat elements/attachments in production. Free tier.
 
 Every service above was used on its free tier for this project. That's not a limitation so much as the point — a good chunk of a modern multimodal RAG stack apparently fits inside "free," if you're willing to read the docs for each one. See [INSTALL.md](./INSTALL.md) to set up the same stack yourself.

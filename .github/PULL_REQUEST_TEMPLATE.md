@@ -30,7 +30,7 @@ There's no automated test suite yet, so please describe what you checked manuall
 
 - [ ] I've read the [Contributing Guide](../CONTRIBUTING.md)
 - [ ] My changes follow the project's coding guidelines
-- [ ] I've updated relevant documentation (`README.md` / `INSTALL.md`) if behavior or setup changed
+- [ ] I've updated relevant documentation (`README.md` / `INSTALL.md` / `hosting.md`) if behavior or setup changed
 - [ ] I've added a new numbered migration file rather than editing an existing one (if applicable)
 - [ ] I've checked that the app still runs locally end-to-end
 

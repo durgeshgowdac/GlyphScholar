@@ -33,7 +33,7 @@ This guide covers the full local setup of GlyphScholar. For a project overview a
 |---|---|
 | Local development machine | macOS (this guide uses Homebrew throughout) |
 | Cloud inference (Modal) | Serverless GPU containers — defaults to **NVIDIA A10G** for embedding, reranking, and answer generation. Configurable via `MODAL_EMBED_GPU`, `MODAL_RERANK_GPU`, `MODAL_ANSWER_GPU` |
-| Database | PostgreSQL 18 with the `pgvector` extension, hosted locally for dev (or on Neon in production — see hosting.md). Supabase runs a *separate* Postgres of its own, used only for auth (`auth.users`/`profiles`), not for this database. |
+| Database | PostgreSQL 18 with the `pgvector` extension, hosted locally for dev (or on Neon in production — see [hosting.md](./hosting.md)). Supabase runs a *separate* Postgres of its own, used only for auth (`auth.users`/`profiles`), not for this database. |
 
 ### Software Requirements
 
@@ -288,7 +288,8 @@ All variables live in `.env` (copied from `.env.example`), grouped by section:
 | App / CORS | `ENVIRONMENT`, `PORTAL_PORT`, `CORS_ORIGINS`, `PDF_RENDER_QUOTA_MULTIPLIER` |
 | Auth & Security | `CHAINLIT_AUTH_SECRET`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` |
 | Database | `DATABASE_URL`, `DB_POOL_MIN_SIZE`, `DB_POOL_MAX_SIZE` |
-| Storage (production only, not in `.env.example`) | `B2_BUCKET`, `B2_ENDPOINT`, `B2_KEY_ID`, `B2_APP_KEY`, `B2_REGION` — only read when `ENVIRONMENT=production`; see hosting.md § Storage |
+| Storage / Uploads | `UPLOAD_ROOT`, `MAX_USER_UPLOAD_BYTES`, `SESSION_CLEANUP_OLDER_THAN_DAYS` |
+| Storage (production only, not in `.env.example`) | `B2_BUCKET`, `B2_ENDPOINT`, `B2_KEY_ID`, `B2_APP_KEY`, `B2_REGION` — only read when `ENVIRONMENT=production`; see [hosting.md § Storage](./hosting.md#storage--backblaze-b2) |
 | Ingestion | `RENDER_CONCURRENCY`, `CHUNK_SIZE`, `CHUNK_OVERLAP`, `MAX_PDF_PAGES` |
 | MinerU | `MINERU_TOKEN`, `MINERU_BASE_URL`, `MINERU_MODEL_VERSION`, `MINERU_IS_OCR`, `MINERU_ENABLE_TABLE`, `MINERU_ENABLE_FORMULA`, `MINERU_LANGUAGE`, `MINERU_POLL_INTERVAL`, `MINERU_MAX_POLL_TIME` (plus optional overrides in `.env.example`) |
 | Model selection | `USE_MODAL_EMBED`, `USE_MODAL_RERANK`, `USE_MODAL_ANSWER`, `EMBED_MODEL`, `RERANK_MODEL`, `ANSWER_MODEL`, `EMBED_DIM` |
