@@ -33,7 +33,7 @@ GlyphScholar exists to skip that part. It parses a document the way a person act
 
 ## Demo
 
-<video src="https://github.com/user-attachments/assets/aa8570f4-1be6-4326-ab8d-52122921c60e" controls width="720">
+<video src="https://github.com/user-attachments/assets/bd1c4a5a-6626-4934-800e-527097f3081e" controls width="720">
   Your browser does not support inline video.
 </video>
 
