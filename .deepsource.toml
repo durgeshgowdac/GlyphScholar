@@ -29,7 +29,7 @@ dependency_file_paths = ["portal"]
 
   [analyzers.meta]
   environment = ["nodejs", "browser"]
-  module_system = "esmodules"
+  module_system = "es-modules"
 
 [[analyzers]]
 name = "secrets"
