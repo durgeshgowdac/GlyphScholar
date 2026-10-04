@@ -17,19 +17,19 @@ exclude_patterns = [
 [[analyzers]]
 name = "python"
 enabled = true
+dependency_file_paths = ["requirements.txt"]
 
   [analyzers.meta]
   runtime_version = "3.x.x"
-  dependency_file_paths = ["requirements.txt"]
 
 [[analyzers]]
 name = "javascript"
 enabled = true
+dependency_file_paths = ["portal"]
 
   [analyzers.meta]
-  environment = ["nodejs", "react"]
+  environment = ["nodejs", "browser"]
   module_system = "esmodules"
-  dependency_file_paths = ["portal/package.json"]
 
 [[analyzers]]
 name = "secrets"
